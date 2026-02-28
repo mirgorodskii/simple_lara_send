@@ -2,13 +2,10 @@ import os
 from flask import Flask, request, jsonify
 from datetime import datetime
 import resend
-import httpx
 
 app = Flask(__name__)
 
 resend.api_key = os.environ["RESEND_API_KEY"]
-TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
-TELEGRAM_CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 EMAIL_FROM = os.environ["EMAIL_FROM"]
 EMAIL_TO = os.environ["EMAIL_TO"]
 
@@ -28,7 +25,6 @@ def send_manual():
 
     now = datetime.now()
 
-    # Email
     resend.Emails.send({
         "from": EMAIL_FROM,
         "to": [EMAIL_TO],
@@ -41,31 +37,12 @@ def send_manual():
         """
     })
 
-    # Telegram
-    httpx.post(
-        f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
-        json={"chat_id": TELEGRAM_CHAT_ID, "text": text, "parse_mode": "HTML"}
-    )
 
     return cors(jsonify({"ok": True}))
 
 
 @app.route('/send', methods=['OPTIONS'])
 def send_options():
-    return cors(jsonify({}))
-
-
-@app.route('/generate', methods=['POST'])
-def generate_endpoint():
-    from main import generate_thought, send_email, send_telegram
-    thought, theme, moon_phase, combo = generate_thought()
-    send_telegram(thought)
-    send_email(thought, theme, moon_phase)
-    return cors(jsonify({"ok": True, "thought": thought}))
-
-
-@app.route('/generate', methods=['OPTIONS'])
-def generate_options():
     return cors(jsonify({}))
 
 
