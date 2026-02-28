@@ -10,10 +10,14 @@ EMAIL_FROM = os.environ["EMAIL_FROM"]
 EMAIL_TO = os.environ["EMAIL_TO"]
 
 
-def cors(resp):
+@app.after_request
+def add_cors(resp):
     resp.headers['Access-Control-Allow-Origin'] = '*'
     resp.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-    resp.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+    resp.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS, GET'
+    return resp
+
+def cors(resp):
     return resp
 
 
